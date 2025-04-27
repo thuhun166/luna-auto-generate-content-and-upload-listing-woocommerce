@@ -1,0 +1,14 @@
+{
+    "FSS": {
+        "wp_user": "@gmail.com",
+        "app_password": "",
+        "consumer_key": "",
+        "consumer_secret": ""
+    },
+    "AnotherWebsite": {
+        "wp_user": "another_wp_user@example.com",
+        "app_password": "another_application_password",
+        "consumer_key": "another_consumer_key",
+        "consumer_secret": "another_consumer_secret"
+    }
+}

@@ -1,0 +1,74 @@
+web_name,api_url,wp_url,description,short_description
+FSS,https://footballkitsdeals.com/wp-json/wc/v3/products,https://footballkitsdeals.com,"<p style=""text-align: center;"">Gear up your little football enthusiast with our fantastic <strong>{$formatted_title}</strong>! With the 2024/25 season just around the corner, now is the perfect time to dress them.</p>
+
+<h2 style=""text-align: center;"">Choosing {$formatted_title} from us to get many incredible benefits</h2>
+Take a look at the remarkable advantages that come with choosing <strong>{$formatted_title}</strong> and services:
+
+👕 <strong>Affordable Price:</strong> Enjoy the added benefit of budget-friendly prices for our top-notch products.
+💯 <strong>Top-notch quality:</strong> Rest assured, our products are meticulously crafted to mirror original shirts with 99% similarity. Furthermore, we take pride in delivering excellence, ensuring long-lasting durability and absolute satisfaction.
+😃 <strong>Prompt Customer Support:</strong> Rest assured, our dedicated customer support team is always ready to assist you swiftly and efficiently.
+<h2>Payment Option Guide</h2>
+<ul>
+         <li>To make your shopping experience effortless, we offer the following convenient options:
+<ul>
+         <li><strong>PayPal</strong>: Enjoy a hassle-free and secure transaction by selecting the PayPal option during checkout. You will be redirected to the trusted PayPal website to complete your purchase swiftly.</li>
+         <li><strong>Credit Card</strong>: If you prefer using your credit card, rest assured that we prioritize your comfort and security. Simply choose the credit card payment option during checkout, and effortlessly enter your card details. Your information is handled with utmost care and remains completely secure.</li>
+</ul>
+</li>
+         <li>Should you require any assistance during the credit card payment process, our dedicated support team is readily available. Click <a href=""https://footballshirtsales.com/guide-on-making-payments-with-a-credit-card/"" target=""_blank"" rel=""noopener"">HERE</a> for a comprehensive step-by-step guide that will assist you at every stage of the payment process.</li>
+</ul>
+<h2>Personalisation</h2>
+We provide the option to personalise your <strong>{$formatted_title} </strong>by adding the name and number of your favourite player or your own name. With our quick two-step process, you can have your name printed in the same style as the players, giving you an authentic look and feel.
+<ul>
+ 	<li><strong>Step 1</strong>: Choose <strong>Personalisation Options</strong> When you visit the product page for the <strong>{$formatted_title}</strong>. Simply click on the ""Personalise"" button. This will open our personalisation tool, where you can enter your name and number.</li>
+ 	<li><strong>Step 2</strong>: <strong>Enter Your Name and Number</strong> In the personalisation tool, please provide your name and number. We recommend keeping names within 10 letters (including spaces) and numbers within 2 digits. Once you submit your personalisation details, they cannot be changed, so please ensure everything is accurate and spelt correctly.</li>
+</ul>
+<h2>Shipping Information of {$formatted_title}</h2>
+Typically, our shirt delivery time ranges from <strong>8 to 12 working days</strong>. However, there might be occasional instances where it takes a little longer. Rest assured, during the checkout process, our advanced system will efficiently calculate and showcase the applicable shipping fees while offering various shipping options based on each location's availability. Furthermore, we extend our shipping services beyond the <strong>UK</strong>. We deliver our products not only domestically but also to other countries such as the <strong>US</strong>, <strong>Germany</strong>, and <strong>France</strong>, ensuring customer satisfaction.
+<h2>Additional Notice of {$formatted_title}</h2>
+<ul>
+         <li>Once we process your order for the <strong>{$formatted_title}</strong>, please note that we cannot accept returns or issue refunds for personalized shirts with names/numbers. However, if the item is damaged or defective, we will gladly refund your purchase.</li>
+         <li>Before placing your order, we recommend checking the size chart available on our website to ensure the correct fit.</li>
+         <li>Rest assured, our products are high-quality replicas of the original shirts and kits, and we guarantee 99% customer satisfaction.</li>
+         <li>If you have any concerns regarding our products, please feel free to reach out to us via email at <strong><a href=""mailto:football.shirt.sales.uk@gmail.com"">football.shirt.sales.uk@gmail.com</a></strong>.</li>
+</ul>
+<br>
+{$html_content_about_club}
+<br>
+{$html_content_related_product}
+","<strong>Get your child ready for the new season with <span style=""color: #0000ff;"">{$formatted_title}</span></strong><strong> from us.</strong>
+<ul>
+ 	<li style=""list-style-type: none;"">
+<ul>
+ 	<li>1. Hang out with us, build trust, and have a <strong>BIG SALE</strong>!</li>
+</ul>
+</li>
+</ul>
+<ul>
+ 	<li style=""list-style-type: none;"">
+<ul>
+ 	<li>2. Personalise your child's kit with their name and <strong>number</strong> for a unique look.</li>
+</ul>
+</li>
+</ul>
+<ul>
+ 	<li style=""list-style-type: none;"">
+<ul>
+ 	<li>3.<strong> The perfect gift</strong> for any football fan, young or old.</li>
+</ul>
+</li>
+</ul>
+<ul>
+ 	<li style=""list-style-type: none;"">
+<ul>
+ 	<li>4. Get your child ready for the new season with <strong>the latest kit</strong></li>
+</ul>
+</li>
+</ul>
+<ul>
+ 	<li style=""list-style-type: none;"">
+<ul>
+ 	<li>5. <strong>Customer satisfaction</strong> is our priority</li>
+</ul>
+</li>
+</ul>"
