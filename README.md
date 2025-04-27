@@ -1,1 +1,1 @@
-# luna-auto-generate-content--and-upload-listing-woor-auto-upload-listing-woocommerce
+# luna-auto-generate-content-and-upload-listing-woocommerce
