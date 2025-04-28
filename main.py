@@ -136,10 +136,11 @@ def get_product_price_and_variations(title, website):
             best_price = price_entry
     if best_price:
         variations = best_price.get('variations', '')
-        variation_list = [v.strip() for v in variations.split(',')] if variations else []
+        variation_list = [map_variation_to_website_size(v.strip()) for v in variations.split(',')] if variations else []
         return best_price['regular_price'], best_price['sale_price'], variation_list
     else:
         return None, None, []
+
 
 def get_seo_data(website):
     seo_file = os.path.join('seo', f"{website.lower()}_seo.csv")
@@ -297,7 +298,6 @@ def auto_generate_sku_tags(*args):
     else:
         sku = f"{prefix}_{club_code}_{p_type}_{category}_NO_{season_year}"
 
-    # Tags
     tags = [club_name, f"{club_name} {season_year}", f"{club_name} {shirt_name} {category_name} {shirt_type} ", f"New Arrivals {season_year}"]
     if player_name != 'NO':
         tags.append(player_name.capitalize())
@@ -306,6 +306,19 @@ def auto_generate_sku_tags(*args):
     entry_sku.insert(0, sku)
     entry_tags.delete(0, tk.END)
     entry_tags.insert(0, ', '.join(tags))
+
+def map_variation_to_website_size(variation_value):
+    size_mapping = {
+        "16": "16 (3-4 yrs)",
+        "18": "18 (4-5 yrs)",
+        "20": "20 (5-6 yrs)",
+        "22": "22 (7-8 yrs)",
+        "24": "24 (8-9 yrs)",
+        "26": "26 (10-11 yrs)",
+        "28": "28 (12-13 yrs)",
+    }
+    
+    return size_mapping.get(variation_value, variation_value)
 
 
 # === Create Product
@@ -390,11 +403,11 @@ def create_product():
         
         data["attributes"] = [
             {
-                "id": 3,  
+                "id": 3, 
                 "position": 0,
                 "visible": True,
                 "variation": True, 
-                "options": ["16 (3-4 yrs)", "18 (4-5 yrs)"] 
+                "options": variations  
             }
         ]
         
@@ -403,29 +416,32 @@ def create_product():
 
     if response.status_code == 201:
         product_id = response.json()['id']
-        messagebox.showinfo("Success", f"Product '{title}' created.")
 
         if variations:
-            variation_data = [
-                {
-                    "attributes": [{"id": 3, "option": "16 (3-4 yrs)"}],
-                    "regular_price": "19.99",
-                    "sku": f"{sku}_16"  
-                },
-                {
-                    "attributes": [{"id": 3, "option": "18 (4-5 yrs)"}],  
-                    "regular_price": "22.99",
-                    "sku": f"{sku}_18"  
-                }
-            ]
+            variation_data = []
+            for variation in variations:
+                size_number = variation.split()[0]  
+                
+                variation_sku = f"{sku}_{size_number}"
+                
+                variation_data.append({
+                    "attributes": [{"id": 3, "option": variation}], 
+                    "regular_price": regular_price,
+                    "sale_price": sale_price,
+                    "sku": variation_sku  
+                })
 
-            variations_url = f"{websites[website]['api_url']}/{product_id}/variations"
-            variation_response = requests.post(variations_url, auth=(consumer_key, consumer_secret), json=variation_data)
+            batch_data = {
+                "create": variation_data 
+            }
 
-            if variation_response.status_code == 201:
-                messagebox.showinfo("Success", "Variations created successfully.")
+            variations_url = f"{websites[website]['api_url']}/{product_id}/variations/batch"
+            variation_response = requests.post(variations_url, auth=(consumer_key, consumer_secret), json=batch_data)
+
+            if variation_response.status_code in [201, 200]:
+                messagebox.showinfo("Success", f"Product '{title}' created with ID: {product_id}")
             else:
-                messagebox.showerror("Error", f"Failed to create variations: {response.status_code}\n{response.text}")
+                messagebox.showerror("Error", f"Failed to create variations: {variation_response.status_code}\n{variation_response.text}")
     else:
         messagebox.showerror("Error", f"Failed: {response.status_code}\n{response.text}")
 
