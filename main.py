@@ -9,6 +9,26 @@ import os
 import mimetypes
 import re
 from datetime import datetime
+import openai
+
+def generate_content_from_openai(image_prompt):
+    openai.api_key = ""
+
+    try:
+        response = openai.chat.completions.create(
+            model="gpt-3.5-turbo",  
+            messages=[
+                {"role": "user", "content": image_prompt}
+            ],
+            temperature=0.7,
+            max_tokens=300
+        )
+        generated_text = response.choices[0].message.content.strip()
+        return generated_text
+    except Exception as e:
+        print(f"Error generating description: {e}")
+        return None
+    
 
 def read_csv(file_path):
     with open(file_path, newline='', encoding='utf-8') as f:
@@ -120,8 +140,6 @@ def extract_season_year(title, is_auto_generate=False):
                 return f"{part1[2:]}/{part2}"
     return ""
 
-
-
 def get_product_price_and_variations(title, website):
     prices_file = os.path.join('prices', f"{website.lower()}_prices.csv")
     prices = read_csv(prices_file)
@@ -140,7 +158,6 @@ def get_product_price_and_variations(title, website):
         return best_price['regular_price'], best_price['sale_price'], variation_list
     else:
         return None, None, []
-
 
 def get_seo_data(website):
     seo_file = os.path.join('seo', f"{website.lower()}_seo.csv")
@@ -256,11 +273,14 @@ def auto_generate_sku_tags(*args):
     elif 'fourth' in title_lower or 'fouth' in title_lower:
         p_type = 'FO'
         shirt_name = 'Fourth'
+    elif 'pre match' in title_lower or 'training' in title_lower:
+        p_type = 'TN'
+        shirt_name = 'Training'
     else:
         p_type = 'HO'
         shirt_name = 'Home'
 
-    if 'kid' in title_lower:
+    if 'kid' in title_lower or 'kids' in title_lower:
         category = 'KD' 
         category_name = 'Kid'
     else:
@@ -296,7 +316,7 @@ def auto_generate_sku_tags(*args):
     if player_name != 'NO':
         sku = f"{prefix}_{club_code}_{p_type}_{category}_{player_name}_{season_year}"
     else:
-        sku = f"{prefix}_{club_code}_{p_type}_{category}_NO_{season_year}"
+        sku = f"{prefix}_{club_code}_{p_type}_{category}_No_{season_year}"
 
     tags = [club_name, f"{club_name} {season_year}", f"{club_name} {shirt_name} {category_name} {shirt_type} ", f"New Arrivals {season_year}"]
     if player_name != 'NO':
@@ -358,11 +378,26 @@ def create_product():
             messagebox.showerror("Upload Error", f"Error uploading image {i+1}: {e}")
             return
 
-    html_template = websites[website]["description_html"]
-    description = html_template.replace("{$formatted_title}", title) \
+    if website == "RFS":
+        if image_paths:  
+            first_image_path = image_paths[0]
+            prompt = f"Generate a description for the following image: {first_image_path}"
+            
+            ai_description = generate_content_from_openai(prompt)
+
+            html_template = websites[website]["description_html"]
+            description = html_template.replace("{$formatted_title}", title) \
+                                    .replace("{$ai_gen_description}", f"<h2>Description of {title}</h2><p>{ai_description}</p>") \
+                                    .replace("{$year}", season_year)
+        else:
+            description = websites[website]["description_html"].replace("{$formatted_title}", title).replace("{$year}", season_year)
+    else:
+        html_template = websites[website]["description_html"]
+        description = html_template.replace("{$formatted_title}", title) \
                                 .replace("{$html_content_about_club}", f"<h2>About {club['club_name']}</h2><p>{club['about_club']}</p>") \
                                 .replace("{$html_content_related_product}", f"<h2>More from {club['club_name']}</h2><p>{club['related_product']}</p>") \
                                 .replace("{$year}", season_year)
+
 
     if any(player in title_lower for player in players):
         description = remove_personalisation_block(description)
