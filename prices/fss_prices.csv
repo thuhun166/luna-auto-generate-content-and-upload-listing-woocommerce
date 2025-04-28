@@ -1,0 +1,6 @@
+product_type,regular_price,sale_price,variations
+Kid Kit,44.99,26.97,"16, 18, 20, 22, 24, 26, 28"
+Men Shirt,44.99,26.97,"S, M, L, XL, XXL"
+Men Kit,44.99,59.99,"S, M, L, XL, XXL"
+Women Shirt,44.99,45.99,"S, M, L, XL, XXL"
+Women Kit,44.99,55.99,"S, M, L, XL, XXLL"
