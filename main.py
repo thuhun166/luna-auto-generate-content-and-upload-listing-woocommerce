@@ -50,8 +50,10 @@ def get_club_data(product_title, website):
     clubs = read_csv(club_file)
     for club in clubs:
         if club['club_name'].lower() in product_title.lower():
-            return club
+            category_ids = club['category_id'].split(',')  
+            return {**club, 'category_ids': category_ids}
     return None
+
 
 def load_club_codes():
     club_codes = []
@@ -78,6 +80,8 @@ def load_players():
                     players.append(row[0].lower())
     return players
 
+players = load_players()
+
 websites = {}
 for web_config in read_web_config():
     web_name = web_config["web_name"]
@@ -88,7 +92,6 @@ for web_config in read_web_config():
         "short_description_html": web_config["short_description"]
     }
 
-players = load_players()
 
 def save_api_keys(web_name, wp_user, app_password, consumer_key, consumer_secret):
     config = {web_name: {"wp_user": wp_user, "app_password": app_password, "consumer_key": consumer_key, "consumer_secret": consumer_secret}}
@@ -259,6 +262,7 @@ def auto_generate_sku_tags(*args):
     club = get_club_code(title)  
     if not club:
         return
+
     shirt_type = 'Shirt'  
     category = 'AD'  
     club_name = club['club_name'].title() 
@@ -276,13 +280,16 @@ def auto_generate_sku_tags(*args):
     elif 'pre match' in title_lower or 'training' in title_lower:
         p_type = 'TN'
         shirt_name = 'Training'
+    elif 'goalkeeper' in title_lower:
+        p_type = 'GK'
+        shirt_name = 'Goalkeeper'
     else:
         p_type = 'HO'
         shirt_name = 'Home'
 
     if 'kid' in title_lower or 'kids' in title_lower:
         category = 'KD' 
-        category_name = 'Kid'
+        category_name = 'Kids'
     else:
         category = 'AD'  
         category_name = 'Men'
@@ -313,19 +320,37 @@ def auto_generate_sku_tags(*args):
             break
 
     prefix = website 
-    if player_name != 'NO':
+    if player_name != 'No':
         sku = f"{prefix}_{club_code}_{p_type}_{category}_{player_name}_{season_year}"
     else:
         sku = f"{prefix}_{club_code}_{p_type}_{category}_No_{season_year}"
 
     tags = [club_name, f"{club_name} {season_year}", f"{club_name} {shirt_name} {category_name} {shirt_type} ", f"New Arrivals {season_year}"]
-    if player_name != 'NO':
+    if player_name != 'No':
         tags.append(player_name.capitalize())
+
+    if player_name != 'No':
+        focus_keyphrase = f"{club_name} {season_year} {player_name} {shirt_name} {category_name} Football {shirt_type}"
+    else:
+        focus_keyphrase = f"{club_name} {season_year} {shirt_name} {category_name} Football {shirt_type}"
+
+    if "football" not in focus_keyphrase.lower():
+        focus_keyphrase += " Football"
 
     entry_sku.delete(0, tk.END)
     entry_sku.insert(0, sku)
     entry_tags.delete(0, tk.END)
     entry_tags.insert(0, ', '.join(tags))
+    entry_focus_keyphrase.delete(0, tk.END)
+    entry_focus_keyphrase.insert(0, focus_keyphrase)
+
+    regular_price, sale_price, variations = get_product_price_and_variations(title, website)
+
+    if any(player in title_lower for player in players):
+        sale_price = float(sale_price) + 10  
+
+    entry_sale_price.delete(0, tk.END)
+    entry_sale_price.insert(0, f"{sale_price}")
 
 def map_variation_to_website_size(variation_value):
     size_mapping = {
@@ -347,19 +372,19 @@ def create_product():
     title_lower = title.lower()
     season_year = extract_season_year(title)
     sku = entry_sku.get()
+    focus_keyphrase = entry_focus_keyphrase.get()
     tags = [t.strip() for t in entry_tags.get().split(',') if t.strip()]
     website = website_var.get()
 
     if not title or not sku:
         messagebox.showerror("Missing Info", "Please fill in Product Title, SKU.")
         return
-
+    
     club = get_club_data(title, website)
     if not club:
         messagebox.showerror("Club Not Found", "Club name not found in club file")
         return
 
-    category_id = club['category_id']
     keys = load_api_keys(website)
     if not keys:
         return
@@ -388,21 +413,23 @@ def create_product():
             html_template = websites[website]["description_html"]
             description = html_template.replace("{$formatted_title}", title) \
                                     .replace("{$ai_gen_description}", f"<h2>Description of {title}</h2><p>{ai_description}</p>") \
+                                    .replace("{$html_content_about_club}", f"<h2><strong>About {club['club_name']}</strong></h2><p>{club['about_club']}</p>") \
+                                    .replace("{$html_content_related_product}", f"<h2><strong>More from {club['club_name']}</strong></h2><p>{club['related_product'].replace('{club_name}', club['club_name']).replace('{title}', title)}</p>") \
                                     .replace("{$year}", season_year)
         else:
             description = websites[website]["description_html"].replace("{$formatted_title}", title).replace("{$year}", season_year)
     else:
         html_template = websites[website]["description_html"]
         description = html_template.replace("{$formatted_title}", title) \
-                                .replace("{$html_content_about_club}", f"<h2>About {club['club_name']}</h2><p>{club['about_club']}</p>") \
-                                .replace("{$html_content_related_product}", f"<h2>More from {club['club_name']}</h2><p>{club['related_product']}</p>") \
+                                .replace("{$html_content_about_club}", f"<h2>Description of {club['club_name']}</h2><p>{club['about_club']}</p>") \
+                                .replace("{$html_content_related_product}", f"<h2><strong>Selection of {club['club_name']} Football Club products that may interest you</strong></h2><p>{club['related_product'].replace('{club_name}', club['club_name']).replace('{title}', title)}</p>") \
                                 .replace("{$year}", season_year)
-
 
     if any(player in title_lower for player in players):
         description = remove_personalisation_block(description)
 
-    short_description = get_short_description(website).replace("{$formatted_title}", title)
+    short_description = get_short_description(website).replace("{$formatted_title}", title).replace("{club['club_name']}", club['club_name'])
+
     regular_price, sale_price, variations = get_product_price_and_variations(title, website)
     if not regular_price:
         messagebox.showerror("Error", "Price not found for the given product type.")
@@ -416,6 +443,12 @@ def create_product():
         for img_url, alt in zip(uploaded_image_urls[1:], image_alts[1:]):
             images_data.append({"src": img_url, "alt": alt})
 
+    category_ids = club['category_ids']
+    sale_price = entry_sale_price.get().strip()  
+
+    if not sale_price:  
+        sale_price = float(sale_price)
+
     data = {
         "name": title,
         "sku": sku,
@@ -423,13 +456,13 @@ def create_product():
         "sale_price": sale_price,
         "description": description,
         "short_description": short_description,
-        "categories": [{"id": int(category_id)}],
+        "categories": [{"id": int(id.strip())} for id in category_ids],
         "tags": [{"name": tag} for tag in tags],
         "images": images_data,
         "meta_data": [
             {"key": "_yoast_wpseo_title", "value": seo['seo_title']},
             {"key": "_yoast_wpseo_metadesc", "value": seo['meta_description']},
-            {"key": "_yoast_wpseo_focuskw", "value": title}
+            {"key": "_yoast_wpseo_focuskw", "value": focus_keyphrase}
         ]
     }
 
@@ -490,6 +523,7 @@ website_var = tk.StringVar(value="")
 tk.Label(root, text="Website:").pack()
 website_dropdown = tk.OptionMenu(root, website_var, *websites)
 website_dropdown.pack()
+
 def load_api_fields(website):
     keys = load_api_keys(website)
     if keys:
@@ -497,6 +531,7 @@ def load_api_fields(website):
         app_password_var.set(keys["app_password"])
         consumer_key_var.set(keys["consumer_key"])
         consumer_secret_var.set(keys["consumer_secret"])
+
 
 website_var.trace("w", lambda *args: load_api_fields(website_var.get()))
 
@@ -514,6 +549,14 @@ entry_sku.grid(row=1, column=1)
 tk.Label(form, text="Tags (comma)").grid(row=2, column=0, sticky="e")
 entry_tags = tk.Entry(form, width=50)
 entry_tags.grid(row=2, column=1)
+
+tk.Label(form, text="Focus Keyphrase").grid(row=3, column=0, sticky="e")
+entry_focus_keyphrase = tk.Entry(form, width=50)
+entry_focus_keyphrase.grid(row=3, column=1)
+
+tk.Label(form, text="Sale Price").grid(row=4, column=0, sticky="e")
+entry_sale_price = tk.Entry(form, width=50)
+entry_sale_price.grid(row=4, column=1)
 
 tk.Label(root, text="WP User").pack()
 wp_user_var = tk.StringVar()
