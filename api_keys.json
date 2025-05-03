@@ -1,11 +1,17 @@
 {
     "FSS": {
+        "wp_user": "thuhuong160605@gmail.com",
+        "app_password": "y076 419z We5u hOV0 Od4D X3NN",
+        "consumer_key": "ck_b06d04c987b7eeb7fa8807ae4299266331801dd3",
+        "consumer_secret": "cs_57a90565dd2f1c9a98c4ac63eb0bf092c6127b3f"
+    },
+    "RFS": {
         "wp_user": "reoverreover@gmail.com",
         "app_password": "287s YSpa 3mHr J6EP egnM kEJQ",
         "consumer_key": "ck_0e14050d8a05d060a837a24fcec2c081399ac418",
         "consumer_secret": "cs_4e19cc17539f38edbc18461238760630930aae09"
     },
-    "RFS": {
+    "KFK": {
         "wp_user": "reoverreover@gmail.com",
         "app_password": "287s YSpa 3mHr J6EP egnM kEJQ",
         "consumer_key": "ck_0e14050d8a05d060a837a24fcec2c081399ac418",
